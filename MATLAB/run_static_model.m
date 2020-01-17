@@ -42,7 +42,7 @@ parfor i = 1:chains
    folder = fullfile(model_folder,strcat('Chain',int2str(i)));
    mkdir(folder);
     m = Hmsc(folder, false, false, false, 0, 0, false, [false], [false]);
-    m.setData(occurences_selected,'probit',covariates,piCell,[], [], [], [], [], []);
+    m.setData(occurrences_selected,'probit',covariates,piCell,[], [], [], [], [], []);
     m.setCovNames(covariate_names);
     m.setSpeciesNames(species_names);
     covScaleFlag = [2,zeros(1,(nc-1))];
