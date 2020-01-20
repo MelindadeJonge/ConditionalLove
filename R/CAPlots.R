@@ -15,7 +15,8 @@ CAPlots <- function(sample){
   CIlow =   read.csv(file.path(model_path,'CIlowCorrelationsSample.csv'))
   combinations = read.csv(file.path(model_path,'Chain1','Correlations','combinations.csv'),stringsAsFactors = FALSE,header=FALSE)
   gradient = read.csv(file.path(model_path,'Chain1','Correlations','XrGrad.csv'),stringsAsFactors = FALSE,header=FALSE)
-
+  responses = read.csv(file.path(model_path,'CWDResponses.csv'),stringsAsFactors = FALSE,header=FALSE)
+  
   # Replace all non-signifiant correlations with NAs
   means[(CIhigh*CIlow)<=0] = NA  
   # Transform the gradient back to true CWD values (by deviding by the original standard deviation and adding the original mean)
@@ -81,8 +82,19 @@ CAPlots <- function(sample){
   TotalSig = Npos + Nneg
   RatioWetInt = (Npos - Nneg) / TotalSig
 
+  ## ----------------------------------------------------------------------------------------------------------------------
+  #Species richness
+  RespDry = responses[,speciesnumbersDry]
+  RespWet = responses[,speciesnumbersWet]
+  SRDry = rowSums(RespDry)
+  SRWet = rowSums(RespWet)
+
   ## -----------------------------------------------------------------------------------------------------------------------
   # Gradient plots
+  SRGradient = data.frame(SR = c(SRDry,SRWet),
+                          Group = c(rep('Drought-tolerant (DT)',length(SRDry)),
+                                    rep('Drought-sensitive (DS)',length(SRWet))),
+                          gradient=rep(gradient,2))
   
   GradientRat = data.frame(avgint = c(RatioWetWet,RatioWetInt,
                                       RatioDryWet,RatioDryInt,RatioDryDry),
@@ -149,6 +161,15 @@ CAPlots <- function(sample){
                          legend.key.width = unit(5,'mm'),
                          plot.title = element_text(size=8))
   
+  SRPlot = ggplot(data=SRGradient, aes(x=gradient,y=SR,group=Group,colour=Group)) +
+    geom_line(size=0.7) +
+    ggtitle('a)') +
+    xlab(expression(Climatic ~ water ~ deficit ~ (mm))) +
+    ylab(expression(Predicted ~ species ~ richness))+
+    theme_bw() +
+    science_themea +
+    scale_colour_manual(values=c('#F98C0AFF','#000004FF')) 
+  
   CAPlot2 = ggplot(data=GradientRat, aes(x=gradient,y=avgint,group=as.factor(InteractingGroupF),colour=as.factor(InteractingGroupF),linetype=as.factor(InteractingGroupF),size=as.factor(InteractingGroupF))) +
     geom_line() + 
     scale_y_continuous(limits=c(-1,1)) + 
@@ -188,8 +209,8 @@ CAPlots <- function(sample){
   
   ggsave(file=file.path(figure_path,'Fig4_CA.tiff'),
          device = c('tiff'),
-         plot = multiplot(CAPlot1,CAPlot2,cols=2),
+         plot = multiplot(SRPlot,CAPlot1,CAPlot2,cols=3),
          dpi = 600,
          units = c('mm'),
-           width = 110, height = 55)
+           width = 173, height = 55)
 }
