@@ -7,7 +7,7 @@ Code and data needed to reproduce the pre-processing steps are not made availabl
 
 The following steps should be taken to replicate the Joint-SDMs described in the paper: 
 
-Step 1: Run the main model in MATLAB using run_model(1,800,250,10,3). WARNING: This step may take a long time, in the order weeks. 
+Step 1: Run the main model in MATLAB using run_model(1,800,250,10,3). You can also run the static model with run_static_model(1,800,250,3). WARNING: This step may take a long time, in the order weeks. 
 
 Step 2: Check the convergence the beta parameters of the model using check_convergence('Conditional',1,1)
 
