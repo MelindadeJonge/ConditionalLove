@@ -14,7 +14,7 @@ Step 2: Check the convergence the beta parameters of the model using check_conve
 
 Step 3: If the models are converged combine the postiors of the runs after discard the burnin period (600 runs) into one model object and calculate the residual correlations of the species using finalize_model('Conditional',1,600,10) and finalize_model('Static',1,600,10).
 
-From the main top directory of this repository:
+From the top directory of this repository:
 ```
 addpath('MATLAB')
 run_static_model(1,800,250,3)
@@ -26,14 +26,19 @@ finalize_model('Conditional',1,600,10)
 ```
 
 ## Analysis in R
-To replicate the analysis of the model and figures, first calculate the mean and confidence intervals of the residual associations along the gradient for the conditional model using meanAssociationGradient(1) and determine for each pairwise association if they differ at the 75th percentile of the gradient as compared to the 25th.
+To replicate the analysis of the model and figures, first calculate the mean and confidence intervals of the residual associations along the gradient for the conditional model using meanAssociationGradient(1) and determine for each pairwise association if they differ at the 75th percentile of the gradient as compared to the 25th. Figure 3 and 4 of the manuscript can then be reproduced with CAPlots() and makePairwiseFigures(). 
 
 ```r
 source(file.path('R','meanAssociationGradient.R')
 source(file.path('R','associationChange.R')
+source(file.path('R','CAPlots.R')
+source(file.path('R','makePairwiseFigures.R')
+
 
 meanAssociationGradient(1)
 associationChange(1)
+CAPlots(1)
+makePairwiseFigures(1)
 
 ```
 
