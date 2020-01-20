@@ -14,6 +14,6 @@ Step 3: If the models are converged combine the postiors of the runs and discard
 To replicate the analysis of the model:
 
 
-This repository includes the HMSC package V2.1 for MATLAB wich can be found at: https://www.helsinki.fi/en/researchgroups/statistical-ecology/software/old-versions-of-hmsc
+This repository includes the HMSC package V2.1 for MATLAB which can be found at: https://www.helsinki.fi/en/researchgroups/statistical-ecology/software/old-versions-of-hmsc
 
  
