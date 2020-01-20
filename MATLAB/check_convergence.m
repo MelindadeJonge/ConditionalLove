@@ -1,4 +1,4 @@
-function[] = check_convergence(model,id,start_run)
+function[] = check_convergence(model,id,burnin)
 addpath(fullfile('MATLAB','HMSC_Class'))
 addpath('output')
 model_folder = fullfile('output',strcat(model,'Model',int2str(id)));
@@ -9,17 +9,16 @@ covariate_names = regexprep(covariate_names,'"','');
 species_names = regexprep(species_names,'/','');
 
 %Load posteriors
-[beta_post, beta_names] = extract_beta(model_folder,repN,start_run,niter,chains,covariate_names,species_names);
+[beta_post, beta_names] = extract_beta(model_folder,repN,burnin,niter,chains,covariate_names,species_names);
 
 %Calculate and plot the sampling variance corrected Gelman-Rubin statistics (Rc)
-itertotal = (repN-start_run)*niter;
+itertotal = (repN-burnin)*niter;
 Rc = GelmanRubin(beta_post,niter,itertotal);
 figure1=figure;
 xaxis = 1:niter:itertotal;
-xaxis = xaxis + start_run*niter;
 plot(xaxis,Rc);
 hold on;
-axis([start_run*niter itertotal 0.9 max(max(Rc))]);
+%axis([start_run*niter lastit 0.9 max(max(Rc))]);
 hline=refline([0,1.05]);
 hline.Color='k';
 hline.LineWidth = 0.5;
@@ -30,7 +29,7 @@ saveas(figure1,filename,'jpg')
 hold off
 
 %Make traceplots for variables that have a GR statistic below 1.05
-not_converged = Rc(:,(repN-start_run))>2;
+not_converged = Rc(:,(repN-burnin))>1.05;
 nplots = sum(not_converged);
 for i=1:chains
     beta_plot{i} = beta_post{i}(:,not_converged);
@@ -38,7 +37,8 @@ end
 beta_names_plot = beta_names(not_converged);
 for i=1:nplots
 	figure1=figure;
-	plot(1:itertotal,beta_plot{1}(:,i),1:itertotal,beta_plot{2}(:,i),1:itertotal,beta_plot{3}(:,i));
+    xaxis = ((burnin)*niter+1):repN*niter;
+	plot(xaxis,beta_plot{1}(:,i),xaxis,beta_plot{2}(:,i),xaxis,beta_plot{3}(:,i));
 	xlabel('MCMC iteration');
 	ylabel(strcat(beta_names_plot(i)));
 	legend('Chain1','Chain2','Chain3')
@@ -60,7 +60,7 @@ end
 %	Statistical Science, 7(4), 457-472. Retrieved from http://www.jstor.org/stable/2246093
 function [Rc] = GelmanRubin(A,sectionsize,itertotal)
 [~,nchain] = size(A);
-[nvar, ~] = size(A{1});
+[~, nvar] = size(A{1});
 nsections = itertotal/sectionsize;
 for section = 1:nsections
 	lastit = section*sectionsize;
@@ -91,15 +91,15 @@ end
 
 %% ---------------------------------------------------------------------------------------------------
 % Combine beta posteriors from multiple chains into array
-function[beta_post, beta_names] = extract_beta(folder,repN,start_run,niter,chains,covariate_names,species_names)
+function[beta_post, beta_names] = extract_beta(folder,repN,burnin,niter,chains,covariate_names,species_names)
 beta_post = cell(1,chains);
-runs_wanted = repN - start_run;
+runs_wanted = repN - burnin;
 [~, ns] = size(species_names);
 [~, nc] = size(covariate_names);
 a=1; nf = 1;
 for chain = 1:chains
 	for i=1:runs_wanted
-		load(fullfile(folder,strcat('Chain',num2str(chain)),'posteriors',strcat('postPar_run_',num2str(i+start_run),'.mat')))
+		load(fullfile(folder,strcat('Chain',num2str(chain)),'posteriors',strcat('postPar_run_',num2str(i+burnin),'.mat')))
 		for j=1:niter
 			try
 				beta_post{chain}((j+(i-1)*niter),:) = parVec{j}.beta(:)';
@@ -117,11 +117,5 @@ for Species=1:ns
 	coeffnames = regexprep(coeffnames,'"','');
 end
 beta_names = reshape(coeffnames.',[],1);
-end
-
-%% ---------------------------------------------------------------------------------------------------
-%Function to generate traceplots, NOTE! only for 3 chains! But can be easily updated to three.
-function [] = plotTraceplots(X,names,burnin,Nitertotal,Niter,Sample,folder)
-
 end
 
