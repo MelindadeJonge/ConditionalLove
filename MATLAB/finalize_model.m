@@ -1,4 +1,4 @@
-function[] = finalize_model(model,id,burnin,extrathinning)
+function[] = finalize_model(model,id,burnin,repN,chains,niter,thinning,extrathinning)
 addpath(fullfile('MATLAB','HMSC_Class'))
 addpath('output')
 model_folder = fullfile('output',strcat(model,'Model',int2str(id)));
