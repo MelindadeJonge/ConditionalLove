@@ -1,5 +1,5 @@
 % Array job for predictions
-function [] = response_gradient(model,id,chains)
+function [] = response_gradient(model,id,chains,n)
 %% Prep environment
 addpath(fullfile('MATLAB','HMSC_Class'))
 addpath('output')
@@ -21,11 +21,11 @@ for i=1:chains
    PoO = zeros(nNew,m.ns);
 
    if strcmp(model,'Conditional')
-       predList = m.predict(500,Env,[],[],piCell,[],XrCell,true);
+       predList = m.predict(n,Env,[],[],piCell,[],XrCell,true);
 	   PoO_all = mean(cat(3, predList{:}), 3);
        PoO = PoO + PoO_all((m.ny+1):end,:);
    elseif strcmp(model,'Static')
-       predList = m.predict(500,Env,[],[],piCell,[],[],true);
+       predList = m.predict(n,Env,[],[],piCell,[],[],true);
        PoO_all = mean(cat(3, predList{:}), 3);
        PoO = PoO + PoO_all((m.ny+1):end,:);   
    end
