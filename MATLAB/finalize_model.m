@@ -49,14 +49,33 @@ for i=1:chains
         for grad = 1:length(CWDquants)
             [correlations, combination] = m.computeCorrelationsFullP(1,CWDquants(grad,:));                      
             csvwrite(fullfile(folder,'Correlations',strcat('QuantileCorrelations',num2str(grad),'.csv')),correlations);
+            % Extract parameters for effective sample size estimation
+            Omega = m.getPostOmega(1,CWDquants(grad,:));
+            Omega = Omega{1};
+            csvwrite(fullfile(folder,strcat('Omega',num2str(grad),'.csv')),Omega);
+
         end
 
         csvwrite(fullfile(folder,'Correlations','XrGrad.csv'),XrGrad);
         csvwrite(fullfile(folder,'Correlations','combinations.csv'),combination);
+        
+        % Extract parameters for effective sample size estimation
+        Beta = m.getPostBeta();
+        Beta = Beta{1};
+        csvwrite(fullfile(folder,'Beta.csv'),Beta);
+
     elseif strcmp(model,'Static')
         [correlations,combinations] = m.computeCorrelationsFullP(1,[]);
         csvwrite(fullfile(folder,'Correlations','Correlations.csv'),correlations);
         csvwrite(fullfile(folder,'Correlations','SpeciesCombinations.csv'),combinations)
+        
+        % Extract parameters for effective sample size estimation
+        Omega = m.getPostOmega(1,[]);
+        Omega = Omega{1};
+        csvwrite(fullfile(folder,strcat('Omega',num2str(grad),'.csv')),Omega);
+        Beta = m.getPostBeta();
+        Beta = Beta{1};
+        csvwrite(fullfile(folder,'Beta.csv'),Beta);
     end
 end
 end

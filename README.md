@@ -71,6 +71,13 @@ checkResiduals(1)
 ```
 
 ## Effective sample size
+To calculate the effective sample size of the beta parameters and omega estimates:
+```r
+source(file.path('R','EffectiveSampleSize.R'))
+EffectiveSampleSize(1)
+```
+Figures are store in the figures folder.
+
 
 This repository includes the HMSC package V2.1 for MATLAB which can be found at: https://www.helsinki.fi/en/researchgroups/statistical-ecology/software/old-versions-of-hmsc
 
